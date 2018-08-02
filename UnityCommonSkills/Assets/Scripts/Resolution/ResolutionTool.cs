@@ -180,6 +180,17 @@ public class ResolutionTool : MonoBehaviour
 
     #endregion
 
+    [SerializeField]
+    bool isPrintScreenAttributes = true;
+
+    RectTransform rectTransform;
+
+    void Awake()
+    {
+        rectTransform = transform as RectTransform;
+    }
+
+
     void Start()
     {
         //当前显示器---DELL U2212HM
@@ -188,32 +199,69 @@ public class ResolutionTool : MonoBehaviour
 
         //1英寸 = 2.54厘米
 
-        Debug.Log(GetSystemMetrics(SM_CXSCREEN));//1920---当前显示分辨率宽 / 自定义缩放比例
-        Debug.Log(GetSystemMetrics(SM_CYSCREEN));//1080---当前显示分辨率高 / 自定义缩放比例
+        #region 屏幕属性
 
-        Debug.Log(WorkingArea);//(1536.0, 864.0)
-        Debug.Log(DpiX);//96
-        Debug.Log(DpiY);//96
-        Debug.Log(DESKTOP);//(1920.0, 1080.0)
-        Debug.Log(ScaleX);//1.25
-        Debug.Log(ScaleY);//1.25
-        Debug.Log(ScreenPhysicalSize.x);//475mm---18.7inch
-        Debug.Log(ScreenPhysicalSize.y);//267mm---10.5inch
+        if (isPrintScreenAttributes)
+        {
+            Debug.Log(GetSystemMetrics(SM_CXSCREEN));//1920---当前显示分辨率宽 / 自定义缩放比例
+            Debug.Log(GetSystemMetrics(SM_CYSCREEN));//1080---当前显示分辨率高 / 自定义缩放比例
 
-        Debug.Log(Screen.currentResolution);//1920 x 1080 @ 60Hz---系统推荐分辨率（更改显示并不影响输出结果）
-        Debug.Log(Screen.width);//1024---Game窗口有效宽
-        Debug.Log(Screen.height);//768---Game窗口有效高
-        Debug.Log(Screen.dpi);//96
-        Debug.Log(Camera.main.pixelRect);
+            Debug.Log(WorkingArea);//(1536.0, 864.0)
+            Debug.Log(DpiX);//96
+            Debug.Log(DpiY);//96
+            Debug.Log(DESKTOP);//(1920.0, 1080.0)
+            Debug.Log(ScaleX);//1.25
+            Debug.Log(ScaleY);//1.25
+            Debug.Log(ScreenPhysicalSize.x);//475mm---18.7inch
+            Debug.Log(ScreenPhysicalSize.y);//267mm---10.5inch
 
+            Debug.Log(Screen.currentResolution);//1920 x 1080 @ 60Hz---系统推荐分辨率（更改显示并不影响输出结果）
+            Debug.Log(Screen.width);//1024---Game窗口有效宽
+            Debug.Log(Screen.height);//768---Game窗口有效高
+            Debug.Log(Screen.dpi);//96
+            Debug.Log(Camera.main.pixelRect);
+        }
+
+        #endregion
 
     }
 
     void Update()
     {
         //Debug.Log(Input.mousePosition);
+
+        Debug.Log("本地坐标：" + transform.localPosition);
+        Debug.Log("世界坐标：" + transform.position);
+
+        Debug.Log("锚点坐标（AnchorPos）：" + rectTransform.anchoredPosition);
+
+        Debug.Log("Rect坐标（Rect Pos）：" + rectTransform.rect.position);
+        Debug.Log("Rect size：" + rectTransform.rect.size);
+
+        Debug.Log("最大偏移：" + rectTransform.offsetMax);
+        Debug.Log("最小偏移：" + rectTransform.offsetMin);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            
+        }
+
     }
 
+    /// <summary>
+    /// 保持控件相对位置不变
+    /// </summary>
+    public void KeepUIRelativePlace(RectTransform rectTran, Vector2 newPivot) 
+    {
+        
+        Vector2 oldPivot = rectTran.pivot;
+        Vector2 pivotOffset = newPivot - oldPivot;
 
+        float newPosX = rectTran.anchoredPosition.x + pivotOffset.x * rectTran.rect.width;
+        float newPosY = rectTran.anchoredPosition.y + pivotOffset.y * rectTran.rect.height;
+
+        rectTran.anchoredPosition = new Vector2(newPosX, newPosY);
+        rectTran.pivot = newPivot;
+    }
 
 }

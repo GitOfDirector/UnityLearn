@@ -23,6 +23,15 @@ public class ResizePanel : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     public void OnPointerDown(PointerEventData data)
     {
+        //Vector2 oldPivot = panelRectTransform.pivot;
+        //Vector2 pivotOffset = Vector2.up - oldPivot;
+
+        //float newPosX = panelRectTransform.anchoredPosition.x + pivotOffset.x * panelRectTransform.rect.width;
+        //float newPosY = panelRectTransform.anchoredPosition.y + pivotOffset.y * panelRectTransform.rect.height;
+
+        //panelRectTransform.anchoredPosition = new Vector2(newPosX, newPosY);
+        //panelRectTransform.pivot = Vector2.up;
+
         originalSizeDelta = panelRectTransform.sizeDelta;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRectTransform, data.position, data.pressEventCamera, out originalLocalPointerPosition);
     }

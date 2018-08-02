@@ -23,6 +23,10 @@ public class DragPanel : MonoBehaviour, IPointerDownHandler, IDragHandler
     {
         originalPanelLocalPosition = panelRectTransform.localPosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRectTransform, data.position, data.pressEventCamera, out originalLocalPointerPosition);
+
+        //关于事件相关的相机
+        //在默认情况下该值为NULL，除非更改了Canvas的显示模式例如更改为Screen Space-Camera或者World Space
+        //Debug.Log(data.pressEventCamera);
     }
 
     public void OnDrag(PointerEventData data)
