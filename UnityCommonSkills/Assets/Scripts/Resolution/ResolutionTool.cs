@@ -9,6 +9,8 @@ using UnityEngine.EventSystems;
 public class ResolutionTool : MonoBehaviour
 {
 
+    public static ResolutionTool Instance;
+
     #region GetDeviceCaps常量
 
     const int HORZSIZE = 4;                            //物理屏幕的宽度（毫米）
@@ -187,6 +189,8 @@ public class ResolutionTool : MonoBehaviour
 
     void Awake()
     {
+        Instance = this;
+
         rectTransform = transform as RectTransform;
     }
 

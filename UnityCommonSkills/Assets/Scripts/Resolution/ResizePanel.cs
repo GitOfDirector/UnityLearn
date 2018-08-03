@@ -4,11 +4,16 @@ using UnityEngine.EventSystems;
 
 public class ResizePanel : MonoBehaviour, IPointerDownHandler, IDragHandler
 {
-
+    public Transform pivotTran;
+    public Vector2 pivotPlace = Vector2.zero;
     public LocationRelativeToWindow location = LocationRelativeToWindow.Unknown;
 
     public Vector2 minSize = new Vector2(100, 100);
     public Vector2 maxSize = new Vector2(400, 400);
+    public bool isSubtractX = false;
+    public bool isSubtractY = false;
+    public bool isClampWidth = true;
+    public bool isClampHeight = true;
 
     private RectTransform panelRectTransform;
     private Vector2 originalLocalPointerPosition;
@@ -23,14 +28,7 @@ public class ResizePanel : MonoBehaviour, IPointerDownHandler, IDragHandler
 
     public void OnPointerDown(PointerEventData data)
     {
-        //Vector2 oldPivot = panelRectTransform.pivot;
-        //Vector2 pivotOffset = Vector2.up - oldPivot;
-
-        //float newPosX = panelRectTransform.anchoredPosition.x + pivotOffset.x * panelRectTransform.rect.width;
-        //float newPosY = panelRectTransform.anchoredPosition.y + pivotOffset.y * panelRectTransform.rect.height;
-
-        //panelRectTransform.anchoredPosition = new Vector2(newPosX, newPosY);
-        //panelRectTransform.pivot = Vector2.up;
+        ResolutionTool.Instance.KeepUIRelativePlace(panelRectTransform, pivotPlace);
 
         originalSizeDelta = panelRectTransform.sizeDelta;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(panelRectTransform, data.position, data.pressEventCamera, out originalLocalPointerPosition);
@@ -50,24 +48,54 @@ public class ResizePanel : MonoBehaviour, IPointerDownHandler, IDragHandler
         switch (location)
         {
             case LocationRelativeToWindow.Up:
+                sizeDelta = originalSizeDelta + new Vector2(0, offsetToOriginal.y);
+                break;
             case LocationRelativeToWindow.Down:
                 sizeDelta = originalSizeDelta + new Vector2(0, -offsetToOriginal.y);
                 break;
             case LocationRelativeToWindow.Right:
-            case LocationRelativeToWindow.Left:
                 sizeDelta = originalSizeDelta + new Vector2(offsetToOriginal.x, 0);
                 break;
+            case LocationRelativeToWindow.Left:
+                sizeDelta = originalSizeDelta + new Vector2(-offsetToOriginal.x, 0);
+                break;
             case LocationRelativeToWindow.RightUp:
+                sizeDelta = originalSizeDelta + new Vector2(offsetToOriginal.x, offsetToOriginal.y);
+                break;
             case LocationRelativeToWindow.RightDown:
-            case LocationRelativeToWindow.LeftUp:
-            case LocationRelativeToWindow.LeftDown:
                 sizeDelta = originalSizeDelta + new Vector2(offsetToOriginal.x, -offsetToOriginal.y);
+                break;
+            case LocationRelativeToWindow.LeftUp:
+                sizeDelta = originalSizeDelta + new Vector2(-offsetToOriginal.x, offsetToOriginal.y);
+                break;
+            case LocationRelativeToWindow.LeftDown:
+                sizeDelta = originalSizeDelta + new Vector2(-offsetToOriginal.x, -offsetToOriginal.y);
                 break;
             case LocationRelativeToWindow.Inside:
             case LocationRelativeToWindow.Outside:
             case LocationRelativeToWindow.Unknown:
             default:
                 break;
+        }
+
+        Vector2 pivotScreenPos = RectTransformUtility.WorldToScreenPoint(null, pivotTran.position);
+
+        if (isClampWidth)
+        {
+            maxSize.x = isSubtractX ? Screen.width - pivotScreenPos.x : pivotScreenPos.x;
+        }
+        else
+        {
+            maxSize.x = Screen.width;
+        }
+
+        if (isClampHeight)
+        {
+            maxSize.y = isSubtractY ? Screen.height - pivotScreenPos.y : pivotScreenPos.y;
+        }
+        else
+        {
+            maxSize.y = Screen.height;
         }
 
         sizeDelta = new Vector2(
