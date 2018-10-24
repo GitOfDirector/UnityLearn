@@ -22,6 +22,15 @@ public abstract class Weapon
     public virtual void Fire(Vector3 targetPos)
     {
         Debug.Log("Fire!");
+
+        //显示枪口特效
+        mParticle.Stop();
+        mParticle.Play();
+        mLight.enabled = true;
+        //显示子弹轨迹
+
+        //播放声音
+
     }
 
 }
